@@ -35,7 +35,24 @@ const BetArr = reactive([{
   BetFees: 0
 }])
 
-const ClaimMultiples = ref(42)
+const zodiac = reactive([
+  {id: 1, zodiacVal: '蛇', zodiacList: [1, 13, 25, 37, 49]},
+  {id: 2, zodiacVal: '龙', zodiacList: [2, 14, 26, 38]},
+  {id: 3, zodiacVal: '兔', zodiacList: [3, 15, 27, 39]},
+  {id: 4, zodiacVal: '虎', zodiacList: [4, 16, 28, 40]},
+  {id: 5, zodiacVal: '牛', zodiacList: [5, 17, 29, 41]},
+  {id: 6, zodiacVal: '鼠', zodiacList: [6, 18, 30, 42]},
+  {id: 7, zodiacVal: '猪', zodiacList: [7, 19, 31, 43]},
+  {id: 8, zodiacVal: '狗', zodiacList: [8, 20, 32, 44]},
+  {id: 9, zodiacVal: '鸡', zodiacList: [9, 21, 33, 45]},
+  {id: 10, zodiacVal: '猴', zodiacList: [10, 22, 34, 46]},
+  {id: 11, zodiacVal: '羊', zodiacList: [11, 23, 35, 47]},
+  {id: 12, zodiacVal: '马', zodiacList: [12, 24, 36, 48]},
+])
+const zodiacNumber = ref('蛇')
+const zodiacFees = ref(null)
+
+const ClaimMultiples = ref(47)
 const totalFees = ref(0)
 const lotteryNumbers = ref(null)
 const rebates = ref(4)
@@ -113,9 +130,29 @@ function confirm() {
 
   const data = JSON.parse(JSON.stringify(findData))
 
-  console.log(data)
 
   lotteryMoney.value = data.fees * ClaimMultiples.value - totalFees.value
+}
+
+function handleChange(e) {
+  zodiacNumber.value = e
+}
+
+function ConfirmTheBetZodiac() {
+  if (!zodiacFees.value) {
+    return message.error('请输入生肖下注费用！')
+  }
+
+  const find = zodiac.find(item => item.zodiacVal === zodiacNumber.value)
+
+  find.zodiacList.forEach(val => {
+    const fees = zodiacFees.value / find.zodiacList.length
+    arrData.dataSource[val - 1].fees += fees
+  })
+
+  zodiacNumber.value = '蛇'
+  zodiacFees.value = 0
+
 }
 </script>
 
@@ -139,6 +176,41 @@ function confirm() {
         <div style="display: flex;align-items: center;">
           <div style="font-size: 18px;font-weight: 700;">设置理赔倍数：</div>
           <a-input-number v-model:value="ClaimMultiples" :max="49" :min="1" size="large" style="flex: 1;"/>
+        </div>
+
+        <div style="margin: 20px 0;display: flex;justify-content: space-between;">
+          <a-tag color="purple" style="padding: 5px 15px;">
+            <DollarOutlined style="font-size: 18px;"/>
+            <span style="font-size: 16px;font-weight: 700">请选择生肖费用</span>
+          </a-tag>
+
+        </div>
+
+        <div style="display: flex;align-items: center;gap: 10px;margin-bottom: 10px;">
+          <div style="flex: 1;display: flex;align-items: center;">生肖：
+            <a-select
+                ref="select"
+                v-model:value="zodiacNumber"
+                size="large"
+                style="flex: 1;"
+                @change="handleChange"
+            >
+              <a-select-option v-for="item in zodiac" :key="item.id" :value="item.zodiacVal">{{
+                  item.zodiacVal
+                }}
+              </a-select-option>
+            </a-select>
+          </div>
+
+          <div style="flex: 1;display: flex;align-items: center;">下注费用：
+            <a-input-number v-model:value="zodiacFees" :max="100000" :min="0" size="large" style="flex: 1;"/>
+          </div>
+        </div>
+
+        <div>
+          <a-button size="large" style="margin: 10px 0;width: 100%;background-color:darkseagreen;" type="primary"
+                    @click="ConfirmTheBetZodiac">确认下注生肖
+          </a-button>
         </div>
 
         <div style="margin: 20px 0;display: flex;justify-content: space-between;">
