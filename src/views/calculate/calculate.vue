@@ -145,6 +145,8 @@ function ConfirmTheBetZodiac() {
 
   const find = zodiac.find(item => item.zodiacVal === zodiacNumber.value)
 
+  totalFees.value += zodiacFees.value
+
   find.zodiacList.forEach(val => {
     const fees = zodiacFees.value / find.zodiacList.length
     arrData.dataSource[val - 1].fees += fees
